@@ -7,11 +7,18 @@ plugins {
 }
 
 group = "xyz.liusui"
-version = "1.0-SNAPSHOT"
+version = "1.0"
 
 repositories {
-    google()
+    maven("https://maven.aliyun.com/repository/central")
+    maven("https://maven.aliyun.com/repository/public")
+    maven("https://maven.aliyun.com/repository/google")
+    maven("https://maven.aliyun.com/repository/gradle-plugin")
+    mavenLocal()
     mavenCentral()
+
+    google()
+    jcenter()
     maven("https://maven.pkg.jetbrains.space/public/p/compose/dev")
 }
 

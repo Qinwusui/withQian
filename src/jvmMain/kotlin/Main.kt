@@ -1,75 +1,114 @@
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.Crossfade
-import androidx.compose.animation.core.Spring
-import androidx.compose.animation.core.animateValueAsState
-import androidx.compose.animation.core.spring
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.window.WindowDraggableArea
-import androidx.compose.material.IconButton
-import androidx.compose.material.Scaffold
-import androidx.compose.material.Text
-import androidx.compose.material.TopAppBar
+import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Add
-import androidx.compose.material.icons.filled.ArrowDropDown
-import androidx.compose.material.icons.filled.Close
-import androidx.compose.material.icons.filled.Menu
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.State
-import androidx.compose.runtime.getValue
+import androidx.compose.material.icons.filled.*
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.compose.ui.unit.DpSize
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.*
+import kotlinx.coroutines.delay
 import theme.menuBarBackGroundColor
 import theme.menuIconColor
-import ui.icon
-import ui.menuTitle
-import ui.textview
+import ui.*
 import viewmodel.MainViewModel
-import kotlin.system.exitProcess
 
 
+@OptIn(ExperimentalMaterialApi::class)
 fun main() = application {
 
     val windowState = rememberWindowState()
+    var showSplash by remember {
+        mutableStateOf(true)
+    }
+    var showExitDialog by remember {
+        mutableStateOf(false)
+    }
+    LaunchedEffect(showSplash) {
+        delay(2000)
+        showSplash = false
+    }
 
     Window(
-        onCloseRequest = ::exitApplication, state = windowState, undecorated = true,
-
-        ) {
-        Column {
-            menuBar(
-                "画大饼咯",
-                windowState,
-                textColor = menuIconColor,
-                backgroundColor = menuBarBackGroundColor,
-                menuState = MainViewModel.changeLeftBar,
-                onMenuIconClicked = {
-                    MainViewModel.changeLeftBarState()
-                }) {
-                textview(text = "菜单", it, 16.sp)
-            }
-            content(MainViewModel.changeLeftBar)
+        onCloseRequest = ::exitApplication,
+        state = windowState,
+        undecorated = true,
+        icon = painterResource("/icon/love_bubble.png"),
+        transparent = true
+    ) {
+        AnimatedVisibility(showExitDialog) {
+            AlertDialog(
+                onDismissRequest = {
+                    showExitDialog = false
+                },
+                title = {
+                    textview("确定要退出吗？", menuBarBackGroundColor, 30.sp)
+                },
+                dismissButton = {
+                    TextButton(onClick = {
+                        showExitDialog = false
+                    }) {
+                        textview("取消", menuBarBackGroundColor, 20.sp)
+                    }
+                },
+                confirmButton = {
+                    TextButton(onClick = {
+                        exitApplication()
+                    }) {
+                        textview("退出", menuIconColor, 20.sp)
+                    }
+                }
+            )
         }
-
+        AnimatedVisibility(showSplash) {
+            SplashScreen()
+        }
+        AnimatedVisibility(!showSplash) {
+            Column(modifier = Modifier.fillMaxSize()) {
+                menuBar(
+                    title = MainViewModel.title,
+                    windowState = windowState,
+                    textColor = menuIconColor,
+                    backgroundColor = menuBarBackGroundColor,
+                    menuState = MainViewModel.changeLeftBar,
+                    onMenuIconClicked = {
+                        MainViewModel.changeLeftBarState()
+                    },
+                    onExitClicked = {
+                        showExitDialog = true
+                    }) {
+                    textview(text = if (MainViewModel.changeLeftBar) "收起" else "导航", it, 16.sp)
+                }
+                Row(modifier = Modifier.background(menuIconColor)) {
+                    leftNav(MainViewModel.changeLeftBar)
+                    rightMainView(modifier = Modifier.fillMaxSize())
+                }
+            }
+        }
     }
 }
+
 
 @Composable
 fun WindowScope.menuBar(
     title: String,
     windowState: WindowState,
-    modifier: Modifier = Modifier.height(30.dp).fillMaxWidth(),
+    modifier: Modifier = Modifier.height(30.dp).fillMaxWidth()
+        .clip(RoundedCornerShape(topStart = 10.dp, topEnd = 10.dp)),
     textColor: Color,
     backgroundColor: Color,
     menuState: Boolean,
     onMenuIconClicked: () -> Unit,
+    onExitClicked: () -> Unit,
     menuItem: @Composable RowScope.(Color) -> Unit = {}
 ) = TopAppBar(modifier = modifier, backgroundColor = backgroundColor) {
     WindowDraggableArea {
@@ -83,7 +122,7 @@ fun WindowScope.menuBar(
                 IconButton(onClick = onMenuIconClicked) {
                     Crossfade(targetState = menuState) {
                         if (it) {
-                            icon(Icons.Default.Close)
+                            icon(Icons.Default.ArrowBack)
                         } else {
                             icon(Icons.Default.Menu)
                         }
@@ -110,7 +149,7 @@ fun WindowScope.menuBar(
                 }
                 //关闭窗口
                 IconButton(onClick = {
-                    exitProcess(0)
+                    onExitClicked()
                 }) {
                     icon(imageVector = Icons.Default.Close)
                 }
@@ -120,29 +159,6 @@ fun WindowScope.menuBar(
     }
 }
 
-@Composable
-fun content(
-    changeLeftBar: Boolean
-) {
-    Row(modifier = Modifier.fillMaxSize()) {
-        //侧边栏
-        AnimatedVisibility(changeLeftBar) {
-            Column(
-                modifier = Modifier
-                    .background(menuIconColor)
-                    .padding(top = 20.dp, start = 20.dp)
-                    .fillMaxWidth(0.3f)
-                    .fillMaxHeight(),
-                verticalArrangement = Arrangement.SpaceEvenly,
-                horizontalAlignment = Alignment.Start
-            ) {
-                textview(":好饿呀", menuBarBackGroundColor, 16.sp)
-            }
-        }
-        //右边栏
-        Column(modifier = Modifier.fillMaxWidth()) {
 
-        }
-    }
-}
+
 
