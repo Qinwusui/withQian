@@ -1,3 +1,4 @@
+package xyz.liusui.anki
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
@@ -16,10 +17,13 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.*
 import kotlinx.coroutines.delay
-import theme.menuBarBackGroundColor
-import theme.menuIconColor
-import ui.*
-import viewmodel.MainViewModel
+import kotlinx.coroutines.launch
+import xyz.liusui.anki.repo.Repo
+import xyz.liusui.anki.theme.IconLoveBubble
+import xyz.liusui.anki.theme.menuBarBackGroundColor
+import xyz.liusui.anki.theme.menuIconColor
+import xyz.liusui.anki.ui.*
+import xyz.liusui.anki.viewmodel.MainViewModel
 
 
 @OptIn(ExperimentalMaterialApi::class)
@@ -36,12 +40,15 @@ fun main() = application {
         delay(2000)
         showSplash = false
     }
-
+    val scope= rememberCoroutineScope()
+    scope.launch{
+        Repo
+    }
     Window(
         onCloseRequest = ::exitApplication,
         state = windowState,
         undecorated = true,
-        icon = painterResource("/icon/love_bubble.png"),
+        icon = painterResource(IconLoveBubble),
         transparent = true
     ) {
         AnimatedVisibility(showExitDialog) {

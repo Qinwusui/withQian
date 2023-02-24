@@ -1,4 +1,4 @@
-package theme
+package xyz.liusui.anki.theme
 
 import androidx.compose.ui.res.painterResource
 

@@ -1,5 +1,9 @@
 pluginManagement {
     repositories {
+//        maven("https://maven.aliyun.com/repository/central")
+//        maven("https://maven.aliyun.com/repository/public")
+//        maven("https://maven.aliyun.com/repository/google")
+//        maven("https://maven.aliyun.com/repository/gradle-plugin")
         google()
         gradlePluginPortal()
         mavenCentral()
@@ -9,6 +13,7 @@ pluginManagement {
     plugins {
         kotlin("multiplatform").version(extra["kotlin.version"] as String)
         id("org.jetbrains.compose").version(extra["compose.version"] as String)
+        kotlin("plugin.serialization") version "1.7.20"
     }
 }
 

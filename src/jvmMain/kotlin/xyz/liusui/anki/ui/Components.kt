@@ -1,4 +1,4 @@
-package ui
+package xyz.liusui.anki.ui
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.size
@@ -16,7 +16,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import theme.menuIconColor
+import xyz.liusui.anki.theme.menuIconColor
 
 @Composable
 fun menuTitle(

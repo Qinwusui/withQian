@@ -1,4 +1,4 @@
-package ui
+package xyz.liusui.anki.ui
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize

@@ -1,4 +1,4 @@
-package viewmodel
+package xyz.liusui.anki.viewmodel
 
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
