@@ -1,5 +1,4 @@
 import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.Crossfade
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -73,23 +72,23 @@ fun main() = application {
             SplashScreen()
         }
         AnimatedVisibility(!showSplash) {
-            Column(modifier = Modifier.fillMaxSize()) {
+            Column(modifier = Modifier.fillMaxSize().clip(RoundedCornerShape(10.dp))) {
                 menuBar(
                     title = MainViewModel.title,
                     windowState = windowState,
                     textColor = menuIconColor,
                     backgroundColor = menuBarBackGroundColor,
-                    menuState = MainViewModel.changeLeftBar,
                     onMenuIconClicked = {
-                        MainViewModel.changeLeftBarState()
+
                     },
                     onExitClicked = {
+
                         showExitDialog = true
                     }) {
-                    textview(text = if (MainViewModel.changeLeftBar) "收起" else "导航", it, 16.sp)
+                    textview(text = "导航", it, 16.sp)
                 }
                 Row(modifier = Modifier.background(menuIconColor)) {
-                    leftNav(MainViewModel.changeLeftBar)
+                    leftNav()
                     rightMainView(modifier = Modifier.fillMaxSize())
                 }
             }
@@ -102,11 +101,9 @@ fun main() = application {
 fun WindowScope.menuBar(
     title: String,
     windowState: WindowState,
-    modifier: Modifier = Modifier.height(30.dp).fillMaxWidth()
-        .clip(RoundedCornerShape(topStart = 10.dp, topEnd = 10.dp)),
+    modifier: Modifier = Modifier.height(30.dp).fillMaxWidth(),
     textColor: Color,
     backgroundColor: Color,
-    menuState: Boolean,
     onMenuIconClicked: () -> Unit,
     onExitClicked: () -> Unit,
     menuItem: @Composable RowScope.(Color) -> Unit = {}
@@ -120,13 +117,7 @@ fun WindowScope.menuBar(
 
             Row(horizontalArrangement = Arrangement.Start, verticalAlignment = Alignment.CenterVertically) {
                 IconButton(onClick = onMenuIconClicked) {
-                    Crossfade(targetState = menuState) {
-                        if (it) {
-                            icon(Icons.Default.ArrowBack)
-                        } else {
-                            icon(Icons.Default.Menu)
-                        }
-                    }
+                    icon(Icons.Default.Menu)
                 }
                 menuItem(textColor)
             }

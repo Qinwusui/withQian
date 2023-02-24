@@ -22,7 +22,7 @@ import java.net.URL
 
 @Composable
 fun <T> AsyncImage(
-    load: suspend () -> T,
+    load:suspend () -> T,
     painterFor: @Composable (T) -> Painter,
     contentDescription: String,
     modifier: Modifier = Modifier,

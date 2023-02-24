@@ -12,16 +12,8 @@ import kotlinx.coroutines.flow.MutableStateFlow
  */
 object MainViewModel {
     private val scope = CoroutineScope(Dispatchers.Default).coroutineContext
-    var changeLeftBar by mutableStateOf(false)
-        private set
+
     var title by mutableStateOf("HimaWari")
-    var showSplash by mutableStateOf(true)
     var messageLoading = MutableStateFlow(false)
-
-    //切换左侧栏
-    fun changeLeftBarState() {
-        changeLeftBar = !changeLeftBar
-    }
-
 
 }

@@ -10,10 +10,10 @@ group = "xyz.liusui"
 version = "1.0"
 
 repositories {
-    maven("https://maven.aliyun.com/repository/central")
-    maven("https://maven.aliyun.com/repository/public")
-    maven("https://maven.aliyun.com/repository/google")
-    maven("https://maven.aliyun.com/repository/gradle-plugin")
+//    maven("https://maven.aliyun.com/repository/central")
+//    maven("https://maven.aliyun.com/repository/public")
+//    maven("https://maven.aliyun.com/repository/google")
+//    maven("https://maven.aliyun.com/repository/gradle-plugin")
     mavenLocal()
     mavenCentral()
 
@@ -31,10 +31,20 @@ kotlin {
         val jvmMain by getting {
             dependencies {
                 implementation(compose.desktop.currentOs)
+                implementation("io.ktor:ktor-client-core-jvm:2.2.3")
+                implementation("io.ktor:ktor-client-serialization-jvm:2.2.3")
+                implementation("io.ktor:ktor-client-cio-jvm:2.2.3")
+                implementation("io.ktor:ktor-client-content-negotiation-jvm:2.2.3")
+                implementation("io.ktor:ktor-client-websockets-jvm:2.2.3")
+                runtimeOnly("org.jetbrains.kotlinx:kotlinx-coroutines-core-jvm:1.6.4")
+                implementation("org.xerial:sqlite-jdbc:3.41.0.0")
+
             }
         }
         val jvmTest by getting
+
     }
+
 }
 
 compose.desktop {
