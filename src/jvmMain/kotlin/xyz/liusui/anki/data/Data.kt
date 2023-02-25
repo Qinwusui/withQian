@@ -3,29 +3,30 @@ package xyz.liusui.anki.data
 import kotlinx.serialization.Serializable
 
 @Serializable
-data class Msg<T>(
+data class MsgData(
+    val msgIndex: Int?,
+    val receiverName: String?,
+    val receiverId: Int?,
     val senderName: String,
     val senderId: Int,
-    val sendTime: Int,
-    val sendTo: Int,
-    val senderIcon: String,
-    val msgMd5: String,
-    val msg: List<T>
-)
-@Serializable
-enum class MsgType {
-    Text, Img, Face
-}
-
-@Serializable
-data class TextMsg(
-    val msg: Msg<String>,
-    val msgType: MsgType
+    val senderIconUrl: String,
+    val roomId: Int?,
+    val roomName: String?,
+    val msg: String,
+    val t: String,
 )
 
 @Serializable
-data class ImageMsg(
-    val imgBase64: String,
+data class MsgDataBase(
+    val msgIndex: Int?,
+    val nickName: String,
+    val from: String,
+    val chatRoomId: Int?,
+    val chatRoomName: String?,
+    val to: String?,
+    val toNickName: String?,
+    val msg: String,
+    val time: String,
 )
 
 @Serializable
@@ -35,3 +36,7 @@ data class User(
     val userName: String,
     val iconUrl: String
 )
+
+enum class ScreenPage {
+    MessageScreen, ContactScreen, GroupScreen
+}

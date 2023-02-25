@@ -22,7 +22,7 @@ import java.net.URL
 
 @Composable
 fun <T> AsyncImage(
-    load:suspend () -> T,
+    load: suspend () -> T,
     painterFor: @Composable (T) -> Painter,
     contentDescription: String,
     modifier: Modifier = Modifier,
@@ -35,7 +35,7 @@ fun <T> AsyncImage(
             } catch (e: IOException) {
                 // instead of printing to console, you can also write this to log,
                 // or show some error placeholder
-                e.printStackTrace()
+                e.logE()
                 null
             }
         }
@@ -50,7 +50,6 @@ fun <T> AsyncImage(
         )
     }
 }
-
 fun loadImageBitmap(file: File): ImageBitmap =
     file.inputStream().buffered().use(::loadImageBitmap)
 

@@ -60,7 +60,7 @@ fun icon(
 
 @Composable
 fun image(
-    modifier: Modifier = Modifier.size(20.dp),
+    modifier: Modifier = Modifier.size(25.dp),
     painter: Painter,
 ) {
     Image(painter = painter, contentDescription = null, modifier =modifier)

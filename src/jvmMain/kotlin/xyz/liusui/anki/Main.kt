@@ -1,6 +1,9 @@
 package xyz.liusui.anki
+
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
+import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.window.WindowDraggableArea
@@ -12,23 +15,54 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.*
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.*
+import kotlinx.serialization.encodeToString
+import kotlinx.serialization.json.Json
+import xyz.liusui.anki.data.MsgData
+import xyz.liusui.anki.data.ScreenPage
+import xyz.liusui.anki.repo.MsgRepo
 import xyz.liusui.anki.repo.Repo
 import xyz.liusui.anki.theme.IconLoveBubble
 import xyz.liusui.anki.theme.menuBarBackGroundColor
 import xyz.liusui.anki.theme.menuIconColor
 import xyz.liusui.anki.ui.*
+import xyz.liusui.anki.utils.logE
 import xyz.liusui.anki.viewmodel.MainViewModel
 
+fun main() {
+    val scope = CoroutineScope(Dispatchers.IO)
+    scope.launch(Dispatchers.IO) {
+//        val msgData=MsgData(
+//            msgIndex = 0,
+//            receiverId = null,
+//            receiverName = null,
+//            senderId = 234,
+//            senderName = "liusui",
+//            senderIconUrl = "haoye",
+//            roomId = 0,
+//            roomName = "好耶",
+//            msg = "好夜夜夜夜",
+//            t = "为3312313322"
+//        )
+//        val json=Json {
+//            prettyPrint=true
+//            ignoreUnknownKeys=true
+//        }
+//        json.encodeToString(msgData).also {
+//            it.logE()
+//        }
+    }
+    mains()
+
+}
 
 @OptIn(ExperimentalMaterialApi::class)
-fun main() = application {
-
+fun mains() = application {
     val windowState = rememberWindowState()
     var showSplash by remember {
         mutableStateOf(true)
@@ -40,10 +74,15 @@ fun main() = application {
         delay(2000)
         showSplash = false
     }
-    val scope= rememberCoroutineScope()
-    scope.launch{
+    val scope = rememberCoroutineScope()
+    scope.launch {
         Repo
+
     }
+    var currentListPage by remember {
+        mutableStateOf(ScreenPage.MessageScreen)
+    }
+
     Window(
         onCloseRequest = ::exitApplication,
         state = windowState,
@@ -89,13 +128,33 @@ fun main() = application {
 
                     },
                     onExitClicked = {
-
                         showExitDialog = true
                     }) {
                     textview(text = "导航", it, 16.sp)
                 }
                 Row(modifier = Modifier.background(menuIconColor)) {
-                    leftNav()
+
+                    //怎么实现点击icon切换右侧消息页？
+                    leftIconBar {
+                        currentListPage = it
+                    }
+                    currentListPage.logE()
+                    when (currentListPage) {
+                        ScreenPage.MessageScreen -> {
+                            messageList {
+
+                            }
+                        }
+
+                        ScreenPage.ContactScreen -> {
+
+                        }
+
+                        ScreenPage.GroupScreen -> {
+
+                        }
+                    }
+                    Divider(modifier = Modifier.fillMaxHeight().width(1.dp), color = menuBarBackGroundColor)
                     rightMainView(modifier = Modifier.fillMaxSize())
                 }
             }
@@ -115,7 +174,16 @@ fun WindowScope.menuBar(
     onExitClicked: () -> Unit,
     menuItem: @Composable RowScope.(Color) -> Unit = {}
 ) = TopAppBar(modifier = modifier, backgroundColor = backgroundColor) {
-    WindowDraggableArea {
+    WindowDraggableArea(modifier = Modifier.pointerInput(Unit) {
+        detectTapGestures(
+            //顶栏双击事件处理
+            onDoubleTap = {
+                windowState.placement =
+                    if (windowState.placement == WindowPlacement.Maximized) WindowPlacement.Floating else WindowPlacement.Maximized
+            },
+        )
+
+    }) {
         Row(
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically,

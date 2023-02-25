@@ -11,14 +11,13 @@ version = "1.0"
 
 repositories {
 //    maven("https://maven.aliyun.com/repository/central")
-//    maven("https://maven.aliyun.com/repository/public")
-//    maven("https://maven.aliyun.com/repository/google")
-//    maven("https://maven.aliyun.com/repository/gradle-plugin")
     mavenLocal()
     mavenCentral()
-
     google()
-    jcenter()
+    maven("https://maven.aliyun.com/repository/public")
+    maven("https://maven.aliyun.com/repository/google")
+    maven("https://maven.aliyun.com/repository/gradle-plugin")
+
     maven("https://maven.pkg.jetbrains.space/public/p/compose/dev")
 }
 
@@ -39,7 +38,10 @@ kotlin {
                 runtimeOnly("org.jetbrains.kotlinx:kotlinx-coroutines-core-jvm:1.6.4")
                 implementation("org.xerial:sqlite-jdbc:3.41.0.0")
                 implementation("io.ktor:ktor-client-auth:2.2.3")
-                implementation ("org.jetbrains.kotlinx:kotlinx-serialization-json:1.5.0-RC")
+                implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.5.0-RC")
+
+
+
             }
         }
         val jvmTest by getting

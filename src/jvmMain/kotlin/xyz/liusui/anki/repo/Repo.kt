@@ -9,17 +9,20 @@ import io.ktor.client.plugins.websocket.*
 import io.ktor.client.request.*
 import io.ktor.http.*
 import io.ktor.websocket.*
-import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.channels.consumeEach
 import kotlinx.coroutines.flow.channelFlow
+import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOn
-import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.launch
+import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.json.Json
-import xyz.liusui.anki.data.Msg
-import xyz.liusui.anki.data.TextMsg
+import xyz.liusui.anki.data.MsgData
+import xyz.liusui.anki.utils.logE
+import java.text.SimpleDateFormat
+import java.util.*
 
 object Repo {
     private val client = HttpClient(CIO) {
@@ -45,6 +48,9 @@ object Repo {
     init {
         suspendScope.launch {
             initWsSession()
+            receiveMsg().collect{
+                it.logE()
+            }
         }
     }
 
@@ -62,14 +68,21 @@ object Repo {
         }
     }
 
-    suspend fun <T> sendMsg(msg: Msg<T>) {
+    suspend fun <T> sendMsg(msg: MsgData) {
 
     }
 
-    suspend fun receiveTextMsg() = channelFlow<Msg<TextMsg>> {
-        wsSession.incoming.receiveAsFlow().collect {
-
+    suspend fun receiveMsg() = channelFlow {
+        if (!this@Repo::wsSession.isInitialized) {
+            return@channelFlow
         }
+        wsSession.incoming.consumeEach {
+            val msg = Json.decodeFromString<MsgData>(it.readBytes().decodeToString())
+            msg.logE()
+            MsgRepo.insertMsgToDb(msg)
+            send(msg)
+        }
+
     }
 
     private fun <T> flowByIO(block: suspend () -> T) = flow {
