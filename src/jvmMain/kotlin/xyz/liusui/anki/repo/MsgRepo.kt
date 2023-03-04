@@ -43,9 +43,9 @@ CREATE TABLE msg_db
             )
         }
         if (created) {
-            "已经创建过数据库".logD()
+            "创建数据库成功".logD()
         } else {
-            "创建数据库成功".logI()
+            "已经创建过数据库".logI()
         }
     }
 
@@ -87,9 +87,11 @@ CREATE TABLE msg_db
         }
         list
     }
-    fun queryByGroup()= flowByIO {
+
+    fun queryByGroup() = flowByIO {
 
     }
+
     private fun ResultSet.addToList(list: MutableList<MsgData>) {
         while (this.next()) {
             list.add(

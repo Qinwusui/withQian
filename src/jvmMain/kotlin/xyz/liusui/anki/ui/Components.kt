@@ -33,7 +33,7 @@ fun menuTitle(
 fun textview(
     text: String,
     color: Color,
-    fonSize: TextUnit
+    fonSize: TextUnit,
 ) {
     Text(
         text,
@@ -41,9 +41,8 @@ fun textview(
         color = color,
         textAlign = TextAlign.Center,
         fontSize = fonSize,
-        overflow = TextOverflow.Ellipsis,
-
-        )
+        overflow = TextOverflow.Clip
+    )
 }
 
 @Composable
@@ -63,5 +62,5 @@ fun image(
     modifier: Modifier = Modifier.size(25.dp),
     painter: Painter,
 ) {
-    Image(painter = painter, contentDescription = null, modifier =modifier)
+    Image(painter = painter, contentDescription = null, modifier = modifier)
 }

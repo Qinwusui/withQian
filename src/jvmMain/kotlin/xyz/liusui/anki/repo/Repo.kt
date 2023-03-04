@@ -12,17 +12,17 @@ import io.ktor.websocket.*
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.channels.consumeEach
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.channelFlow
-import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.launch
 import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.json.Json
 import xyz.liusui.anki.data.MsgData
+import xyz.liusui.anki.utils.logD
 import xyz.liusui.anki.utils.logE
 import java.text.SimpleDateFormat
-import java.util.*
 
 object Repo {
     private val client = HttpClient(CIO) {
@@ -44,14 +44,47 @@ object Repo {
 
     private lateinit var wsSession: WebSocketSession
     private val suspendScope = CoroutineScope(Dispatchers.IO)
+    val msg = MutableStateFlow(
+        MsgData(
+            0,
+            "",
+            0,
+            "",
+            0,
+            "",
+            0,
+            "",
+            "",
+            ""
+        )
+    )
+    var msgList = MutableStateFlow(mutableListOf<MsgData>())
 
     init {
         suspendScope.launch {
-            initWsSession()
-            receiveMsg().collect{
-                it.logE()
+            MsgRepo.queryAll().collect {
+                msgList.value = it.distinctBy {msgData->
+                    msgData.senderId
+                }.sortedByDescending {msgData->
+                    SimpleDateFormat("yyyy-MM-dd HH:mm:ss SSS").parse(msgData.t).time
+                }.toMutableList()
             }
         }
+        suspendScope.launch {
+            initWsSession()
+            receiveMsg().collect { msgData ->
+                msg.value = msgData
+                MsgRepo.insertMsgToDb(msgData)
+                msgList.value = msgList.value.dropWhile {
+                    it.senderId == msgData.senderId
+                }.toMutableList().apply {
+                    add(msgData)
+                }.sortedByDescending {
+                    SimpleDateFormat("yyyy-MM-dd HH:mm:ss SSS").parse(it.t).time
+                }.toMutableList()
+            }
+        }
+
     }
 
     private suspend fun initWsSession() {
@@ -63,7 +96,7 @@ object Repo {
                     bearerAuth("Qinsansui233...")
                 }
             } catch (e: Exception) {
-                e.printStackTrace()
+                e.logE()
             }
         }
     }
@@ -73,14 +106,14 @@ object Repo {
     }
 
     suspend fun receiveMsg() = channelFlow {
-        if (!this@Repo::wsSession.isInitialized) {
-            return@channelFlow
-        }
-        wsSession.incoming.consumeEach {
-            val msg = Json.decodeFromString<MsgData>(it.readBytes().decodeToString())
-            msg.logE()
-            MsgRepo.insertMsgToDb(msg)
-            send(msg)
+        "www".logD()
+        wsSession.incoming.consumeEach { f ->
+            val json = Json {
+                ignoreUnknownKeys = true
+            }
+            val msgData = json.decodeFromString<MsgData>(f.data.decodeToString())
+
+            send(msgData)
         }
 
     }

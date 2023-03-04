@@ -1,7 +1,6 @@
 package xyz.liusui.anki
 
 import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.*
@@ -25,37 +24,35 @@ import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import xyz.liusui.anki.data.MsgData
 import xyz.liusui.anki.data.ScreenPage
-import xyz.liusui.anki.repo.MsgRepo
 import xyz.liusui.anki.repo.Repo
 import xyz.liusui.anki.theme.IconLoveBubble
 import xyz.liusui.anki.theme.menuBarBackGroundColor
 import xyz.liusui.anki.theme.menuIconColor
 import xyz.liusui.anki.ui.*
 import xyz.liusui.anki.utils.logE
-import xyz.liusui.anki.viewmodel.MainViewModel
 
 fun main() {
     val scope = CoroutineScope(Dispatchers.IO)
     scope.launch(Dispatchers.IO) {
-//        val msgData=MsgData(
-//            msgIndex = 0,
-//            receiverId = null,
-//            receiverName = null,
-//            senderId = 234,
-//            senderName = "liusui",
-//            senderIconUrl = "haoye",
-//            roomId = 0,
-//            roomName = "好耶",
-//            msg = "好夜夜夜夜",
-//            t = "为3312313322"
-//        )
-//        val json=Json {
-//            prettyPrint=true
-//            ignoreUnknownKeys=true
-//        }
-//        json.encodeToString(msgData).also {
-//            it.logE()
-//        }
+        val msgData = MsgData(
+            msgIndex = 0,
+            receiverId = null,
+            receiverName = null,
+            senderId = 234,
+            senderName = "liusui",
+            senderIconUrl = "haoye",
+            roomId = 0,
+            roomName = "好耶",
+            msg = "好夜夜夜夜",
+            t = "为3312313322"
+        )
+        val json = Json {
+            prettyPrint = true
+            ignoreUnknownKeys = true
+        }
+        json.encodeToString(msgData).also {
+            it.logE()
+        }
     }
     mains()
 
@@ -71,13 +68,12 @@ fun mains() = application {
         mutableStateOf(false)
     }
     LaunchedEffect(showSplash) {
-        delay(2000)
+        delay(1000)
         showSplash = false
     }
     val scope = rememberCoroutineScope()
     scope.launch {
         Repo
-
     }
     var currentListPage by remember {
         mutableStateOf(ScreenPage.MessageScreen)
@@ -120,7 +116,7 @@ fun mains() = application {
         AnimatedVisibility(!showSplash) {
             Column(modifier = Modifier.fillMaxSize().clip(RoundedCornerShape(10.dp))) {
                 menuBar(
-                    title = MainViewModel.title,
+                    title = "HimaWari",
                     windowState = windowState,
                     textColor = menuIconColor,
                     backgroundColor = menuBarBackGroundColor,
@@ -138,7 +134,6 @@ fun mains() = application {
                     leftIconBar {
                         currentListPage = it
                     }
-                    currentListPage.logE()
                     when (currentListPage) {
                         ScreenPage.MessageScreen -> {
                             messageList {
@@ -184,29 +179,29 @@ fun WindowScope.menuBar(
         )
 
     }) {
-        Row(
-            horizontalArrangement = Arrangement.SpaceBetween,
-            verticalAlignment = Alignment.CenterVertically,
-            modifier = Modifier.fillMaxWidth()
-        ) {
-
-            Row(horizontalArrangement = Arrangement.Start, verticalAlignment = Alignment.CenterVertically) {
-                IconButton(onClick = onMenuIconClicked) {
-                    icon(Icons.Default.Menu)
-                }
-                menuItem(textColor)
-            }
-            menuTitle(title)
-            //右侧三大金刚键
             Row(
-                horizontalArrangement = Arrangement.End,
+                horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically,
+                modifier = Modifier.fillMaxWidth()
             ) {
-                //最小化
-                IconButton(onClick = { windowState.isMinimized = true }) {
-                    icon(imageVector = Icons.Default.ArrowDropDown)
+
+                Row(horizontalArrangement = Arrangement.Start, verticalAlignment = Alignment.CenterVertically) {
+                    IconButton(onClick = onMenuIconClicked) {
+                        icon(Icons.Default.Menu)
+                    }
+                    menuItem(textColor)
                 }
-                //最大化&窗口
+                menuTitle(title)
+                //右侧三大金刚键
+                Row(
+                    horizontalArrangement = Arrangement.End,
+                    verticalAlignment = Alignment.CenterVertically,
+                ) {
+                    //最小化
+                    IconButton(onClick = { windowState.isMinimized = true }) {
+                        icon(imageVector = Icons.Default.ArrowDropDown)
+                    }
+                    //最大化&窗口
                 IconButton(onClick = {
                     windowState.placement =
                         if (windowState.placement == WindowPlacement.Maximized) WindowPlacement.Floating else WindowPlacement.Maximized

@@ -21,7 +21,7 @@ fun Any?.logD(): String =
     with(SimpleDateFormat("yyyy-MM-dd HH:mm:ss SSS", Locale.CHINESE)) {
         return@with format(Date())
     }.also {
-        println("\u001b[4,43m$it ${this@logD.toString()}")
+        println("\u001b[4;43m$it ${this@logD.toString()}")
     }
 
 /**
